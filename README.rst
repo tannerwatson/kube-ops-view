@@ -83,7 +83,7 @@ Afterwards you can open "kube-ops-view" via the kubectl proxy:
 
     $ kubectl proxy
 
-Now direct your browser to http://localhost:8001/api/v1/proxy/namespaces/default/services/kube-ops-view/
+Now direct your browser to http://localhost:8001/api/v1/namespaces/default/services/kube-ops-view/proxy/
 
 `Kubernetes Operational View is also available as a Helm Chart`_.
 
@@ -97,7 +97,7 @@ The app can be started in "mock mode" to work on UI features without running any
 
 .. code-block:: bash
 
-    $ pip3 install -r requirements.txt
+    $ pipenv install && pipenv shell
     $ (cd app && npm start &)  # watch and compile JS bundle
     $ python3 -m kube_ops_view --mock --debug
 

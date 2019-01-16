@@ -1,9 +1,9 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
     application: kube-ops-view
-    version: v0.7.1
+    version: v0.9.1
   name: kube-ops-view
 spec:
   replicas: 1
@@ -14,13 +14,13 @@ spec:
     metadata:
       labels:
         application: kube-ops-view
-        version: v0.7.1
+        version: v0.9.1
     spec:
       serviceAccount: kube-ops-view
       containers:
       - name: service
         # see https://github.com/hjacobs/kube-ops-view/releases
-        image: hjacobs/kube-ops-view:0.7.1
+        image: hjacobs/kube-ops-view:0.9.1
         args:
         # remove this option to use built-in memory store
         - --redis-url=redis://kube-ops-view-redis:6379
@@ -40,3 +40,7 @@ spec:
           requests:
             cpu: 50m
             memory: 50Mi
+        securityContext:
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 1000

@@ -89,8 +89,8 @@ def query_kubernetes_cluster(cluster):
                     termination_time = parse_time(termination_time)
                     if termination_time > last_termination_time:
                         last_termination_time = termination_time
-            if last_termination_time and last_termination_time < now - 3600:
-                # the job/pod finished more than an hour ago
+            if (last_termination_time and last_termination_time < now - 3600) or (obj.get('reason') == 'Evicted'):
+                # the job/pod finished more than an hour ago or if it is evicted by cgroup limits
                 # => filter out
                 continue
         pods_by_namespace_name[(obj['namespace'], obj['name'])] = obj
@@ -101,7 +101,7 @@ def query_kubernetes_cluster(cluster):
             unassigned_pods[pod_key] = obj
 
     try:
-        response = request(cluster, '/api/v1/namespaces/kube-system/services/heapster/proxy/apis/metrics/v1alpha1/nodes')
+        response = request(cluster, '/apis/metrics.k8s.io/v1beta1/nodes')
         response.raise_for_status()
         data = response.json()
         if not data.get('items'):
@@ -112,7 +112,7 @@ def query_kubernetes_cluster(cluster):
     except Exception as e:
         logger.warning('Failed to query node metrics {}: {}'.format(cluster.id, get_short_error_message(e)))
     try:
-        response = request(cluster, '/api/v1/namespaces/kube-system/services/heapster/proxy/apis/metrics/v1alpha1/pods')
+        response = request(cluster, '/apis/metrics.k8s.io/v1beta1/pods')
         response.raise_for_status()
         data = response.json()
         if not data.get('items'):
